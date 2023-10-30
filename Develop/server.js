@@ -23,10 +23,38 @@ app.get('/notes', (req, res) => {
 });
 
 app.post('/api/notes', (req,res) => {
-  console.log(`${req.method} request recieved`);
 
   const { title, text, id } = req.body;
-})
+
+  if (title && text && id) {
+    // Variable for the object we will save
+    const newNote = {
+      title,
+      text,
+      id: uuid(),
+    };
+
+    const noteString = JSON.stringify(newNote);
+
+    fs.writefile(`./db/${newNote.title}.json`, noteString, (err) => 
+      err
+      ? console.error(err)
+      :console.log(
+        `Review for ${newNote.title} has been written to json file`
+      )
+    );
+
+    const response = {
+      status: 'success',
+      body: newNote,
+    };
+
+    console.log(response);
+    res.status(201).json(response);
+  } else {
+    res.status(500).json('Error in posting note');
+  }
+});
 
 
 app.listen(PORT, () =>
